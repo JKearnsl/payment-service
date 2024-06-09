@@ -20,6 +20,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Users::Username).string_len(32).unique_key().not_null())
                     .col(ColumnDef::new(Users::HashedPassword).string_len(255).not_null())
+                    .col(ColumnDef::new(Users::Balance).decimal_len(10, 2).not_null())
                     .to_owned(),
             )
             .await
@@ -38,4 +39,5 @@ pub enum Users {
     Id,
     Username,
     HashedPassword,
+    Balance,
 }
