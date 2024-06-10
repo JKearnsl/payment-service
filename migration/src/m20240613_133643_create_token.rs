@@ -10,28 +10,28 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(TokenKeys::Table)
+                    .table(Token::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(TokenKeys::Id)
+                        ColumnDef::new(Token::Id)
                             .uuid()
                             .not_null()
                             .extra("DEFAULT gen_random_uuid()")
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(TokenKeys::UserId)
+                    .col(ColumnDef::new(Token::UserId)
                         .uuid()
                         .not_null()
                     )
                      .foreign_key(
                          ForeignKey::create()
-                             .from(TokenKeys::Table, TokenKeys::UserId)
+                             .from(Token::Table, Token::UserId)
                              .to(Users::Table, Users::Id)
                              .on_delete(ForeignKeyAction::Cascade)
                      )
-                    .col(ColumnDef::new(TokenKeys::Hash).string_len(255).unique_key().not_null())
+                    .col(ColumnDef::new(Token::Hash).string_len(255).unique_key().not_null())
                     .col(
-                        ColumnDef::new(TokenKeys::CreatedAt)
+                        ColumnDef::new(Token::CreatedAt)
                             .timestamp_with_time_zone()
                             .default(Expr::current_timestamp())
                             .not_null()
@@ -43,13 +43,13 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(TokenKeys::Table).to_owned())
+            .drop_table(Table::drop().table(Token::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum TokenKeys {
+pub enum Token {
     Table,
     Id,
     UserId,
