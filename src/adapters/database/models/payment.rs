@@ -4,6 +4,8 @@ use super::sea_orm_active_enums::PaymentMethod;
 use super::sea_orm_active_enums::PaymentState;
 use sea_orm::entity::prelude::*;
 
+use chrono::{DateTime, Utc};
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "payment")]
 pub struct Model {
@@ -14,8 +16,8 @@ pub struct Model {
     pub seller_id: Uuid,
     pub state: PaymentState,
     pub method: PaymentMethod,
-    pub created_at: DateTimeWithTimeZone,
-    pub updated_at: Option<DateTimeWithTimeZone>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: Option<DateTime<Utc>>
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
