@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+<p style="font-size: 1.1em; margin: 0">
+    <a href="dashboard">Dashboard</a>
+    <a href="payments">Payments</a>
+    <a class="active" href="#">Tokens</a>
+    <a href="docs">Docs API</a>
+    <a href="about">About</a>
+</p>
+<hr style="margin-bottom: 25px">
+
+<!-- Payments content goes here -->
+
+<p>Payment statistics are collected here</p>
+
+<table>
+    <thead>
+    <tr>
+        <th align="left">HASH</th>
+        <th align="left">DATE</th>
+        <th align="left">ACTION</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td align="left">9</td>
+        <td align="left">leather</td>
+        <td align="left"><input type="button">Delete</td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    let tokensTable = document.querySelector('table');
+    let tokens = [];
+
+    fetch('/api/users/self', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .catch(_ => {
+            window.location.replace('/auth/login');
+        });
+
+    fetch('/api/tokens', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(async response => {
+            if (!response.ok) {
+                throw new Error(await response.text());
+            }
+            return response.json();
+        })
+        .then(data => tokens = data)
+        .catch(error => {
+            console.log(error);
+        });
+
+    console.log(tokens);
+
+    const deleteToken = async (id) => {
+        const response = await fetch(`/api/tokens/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(await response.text());
+        }
+        window.location.reload();
+    };
+
+    tokens.forEach(token => {
+        let row = tokensTable.insertRow();
+        let hash = row.insertCell(0);
+        let date = row.insertCell(1);
+        let action = row.insertCell(2);
+        hash.innerHTML = token.hash;
+        date.innerHTML = token.date;
+        action.innerHTML = `<input type="button" value="Delete" onclick="deleteToken('${token.id}')">`;
+    });
+
+
+
+</script>
+
+{% endblock content %}
