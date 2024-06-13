@@ -2,6 +2,36 @@
 
 {% block title %}Dashboard{% endblock title %}
 
+{% block head %}
+{{ super() }}
+<style>
+    .container {
+        display: flex;
+    }
+
+    .flex-element {
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .grow {
+        flex-grow: 1;
+    }
+
+    .tokenLine {
+        overflow: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .tokenLine::-webkit-scrollbar {
+        display: none;
+    }
+
+</style>
+{% endblock head %}
+
 {% block content %}
 <p style="font-size: 1.1em; margin: 0">
     <a href="dashboard">Dashboard</a>
@@ -12,29 +42,58 @@
 </p>
 <hr style="margin-bottom: 25px">
 
-<!-- Payments content goes here -->
+<!-- Tokens content goes here -->
 
-<p>Payment statistics are collected here</p>
+
+<p>
+    Generate a new token key
+</p>
+
+<div class="container">
+    <code id="tokenKey" class="flex-element grow tokenLine" style="border-radius: 4px"></code>
+    <input id="generateButton" class="flex-element" type="button" value="Generate" style="margin: 0">
+</div>
+
+<blockquote>
+    For security reasons, only the hash of the generated token is stored on the server,
+    which is why you should save your token because it cannot be restored!
+</blockquote>
+
+
+<h4>Tokens</h4>
 
 <table>
     <thead>
     <tr>
         <th align="left">HASH</th>
         <th align="left">DATE</th>
-        <th align="left">ACTION</th>
+        <th align="right">ACTION</th>
     </tr>
     </thead>
     <tbody>
-    <tr>
-        <td align="left">9</td>
-        <td align="left">leather</td>
-        <td align="left"><input type="button">Delete</td>
-    </tr>
     </tbody>
 </table>
 
+<div
+    id="copiedTooltip"
+    style="
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px;
+        z-index: 1;
+    "
+>
+    Copied!
+</div>
+
+
 <script>
-    let tokensTable = document.querySelector('table');
+    let tokensBody = document.querySelector('tbody');
+    let tokenKey = document.getElementById('tokenKey');
+    let generateButton = document.getElementById('generateButton');
     let tokens = [];
 
     fetch('/api/users/self', {
@@ -53,24 +112,20 @@
             window.location.replace('/auth/login');
         });
 
-    fetch('/api/tokens', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(async response => {
-            if (!response.ok) {
-                throw new Error(await response.text());
+    const fetchTokens = async () => {
+        const response = await fetch('/api/tokens', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
             }
-            return response.json();
-        })
-        .then(data => tokens = data)
-        .catch(error => {
-            console.log(error);
         });
+        if (!response.ok) {
+            throw new Error(await response.text());
+        }
 
-    console.log(tokens);
+        tokens = await response.json();
+        refreshTable(tokens);
+    };
 
     const deleteToken = async (id) => {
         const response = await fetch(`/api/tokens/${id}`, {
@@ -82,20 +137,97 @@
         if (!response.ok) {
             throw new Error(await response.text());
         }
-        window.location.reload();
+
+        tokens = tokens.filter(token => token.id !== id);
+        refreshTable(tokens);
     };
 
-    tokens.forEach(token => {
-        let row = tokensTable.insertRow();
-        let hash = row.insertCell(0);
-        let date = row.insertCell(1);
-        let action = row.insertCell(2);
-        hash.innerHTML = token.hash;
-        date.innerHTML = token.date;
-        action.innerHTML = `<input type="button" value="Delete" onclick="deleteToken('${token.id}')">`;
+    const refreshTable = (tokens) => {
+        tokensBody.innerHTML = '';
+        tokens = tokens.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        tokens.forEach(token => {
+            let row = tokensBody.insertRow();
+
+            let hash = row.insertCell(0);
+            let date = row.insertCell(1);
+            let action = row.insertCell(2);
+
+            hash.attributes['align'] = 'left';
+            date.attributes['align'] = 'left';
+            action.attributes['align'] = 'right';
+
+            let tokenLen;
+            if (window.innerWidth < 768) {
+                tokenLen = 10; // Mobile
+            } else {
+                tokenLen = 30; // Desktop
+            }
+            hash.innerHTML = `<code class="tokenLine" style="border-radius: 4px" >${token.hash.length > tokenLen ? token.hash.substring(0, tokenLen) + '...' : token.hash}</code>`;
+
+            let userLang = navigator.language || 'en-US';
+            let datetime = new Date(token.created_at);
+            let formattedDate = datetime.toLocaleDateString(userLang, {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            let formattedTime = datetime.toLocaleTimeString(userLang, {
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+            date.innerHTML = formattedDate + ' ' + formattedTime;
+
+            action.innerHTML = `<input type="button" value="Delete" onclick="deleteToken('${token.id}')">`;
+
+            hash.addEventListener('click', function(e) {
+                copyText(token.hash);
+                showCopiedTooltip(e);
+            });
+
+        });
+    };
+
+    generateButton.addEventListener('click', async () => {
+        const response = await fetch('/api/tokens', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(await response.text());
+        }
+
+        tokenKey.innerHTML = await response.json();
+        fetchTokens();
     });
 
+    fetchTokens();
 
+    function copyText(text) {
+        let textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
+
+    function showCopiedTooltip(e) {
+        let tooltip = document.getElementById('copiedTooltip');
+        tooltip.style.display = 'block';
+        tooltip.style.left = e.pageX + 'px';
+        tooltip.style.top = e.pageY + 'px';
+        setTimeout(function() {
+            tooltip.style.display = 'none';
+        }, 1000);
+    }
+
+    tokenKey.addEventListener('click', function(e) {
+        copyText(this.textContent);
+        showCopiedTooltip(e);
+    });
 
 </script>
 
