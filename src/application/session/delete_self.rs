@@ -10,9 +10,9 @@ pub struct DeleteSessionSelf {
 impl Interactor<Option<SessionToken>, SessionToken> for DeleteSessionSelf {
     async fn execute(&self, data: Option<SessionToken>) -> Result<SessionToken, ApplicationError> {
         
-        if *self.id_provider.is_auth() {
+        if !self.id_provider.is_auth() {
             return Err(ApplicationError::Unauthorized(
-                ErrorContent::Message("Вы уже авторизованы".to_string())
+                ErrorContent::Message("Unauthorized".to_string())
             ));
         }
         
@@ -20,7 +20,8 @@ impl Interactor<Option<SessionToken>, SessionToken> for DeleteSessionSelf {
             None => {
                 return Err(ApplicationError::Unauthorized(
                     ErrorContent::Message(
-                        "Ваш способ авторизации не позволяет выполнить эту операцию".to_string()
+                        "Your method of authorization does not allow you to perform this operation"
+                            .to_string()
                     )
                 ));
             },
