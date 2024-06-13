@@ -5,6 +5,7 @@ use crate::adapters::argon2_session_hasher::Argon2SessionHasher;
 use crate::adapters::database::payment_db::PaymentGateway;
 use crate::adapters::database::token_db::TokenGateway;
 use crate::adapters::database::user_db::UserGateway;
+use crate::adapters::sha256_token_hasher::Sha256TokenHasher;
 use crate::application::common::id_provider::IdProvider;
 use crate::application::payment::create::CreatePayment;
 use crate::application::payment::get_by_id::GetPayment;
@@ -26,6 +27,7 @@ pub struct IoC {
     password_hasher: Argon2PasswordHasher,
     session_hasher: Argon2SessionHasher,
     validator: ValidatorService,
+    token_hasher: Sha256TokenHasher,
 }
 
 impl IoC {
@@ -38,7 +40,8 @@ impl IoC {
             payment_gateway: PaymentGateway::new(db_pool.clone()),
             password_hasher: Argon2PasswordHasher::new(),
             session_hasher: Argon2SessionHasher::new(),
-            validator: ValidatorService::new()
+            validator: ValidatorService::new(),
+            token_hasher: Sha256TokenHasher {},
         }
     }
 }
@@ -109,7 +112,7 @@ impl InteractorFactory for IoC {
     fn create_token(&self, id_provider: Box<dyn IdProvider>) -> CreateToken {
         CreateToken {
             token_gateway: &self.token_gateway,
-            token_hasher: &self.session_hasher,
+            token_hasher: &self.token_hasher,
             validator: &self.validator,
             id_provider,
         }
