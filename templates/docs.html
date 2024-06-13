@@ -14,7 +14,74 @@
 
 <!-- Docs content goes here -->
 
-<p> Docs </p>
+<h3> Docs </h3>
+
+<p>
+    This section describes the API documentation for working with the payment service.
+</p>
+
+<h4> Token </h4>
+
+<p>
+    The token is a unique key that is used to authenticate the user.
+    To get started, go to the "Tokens" section and create a token key
+</p>
+
+
+<h4> Payments </h4>
+
+<p>
+    The payment is a transaction that is made by the clients.
+    This section describes the documentation for Payments methods.
+</p>
+
+<h5> Payment State </h5>
+
+<p>
+    The payment state is a status that indicates the current state of the payment.
+    The payment state can be one of the following values:
+</p>
+
+<ul>
+    <li> <strong>PENDING</strong> - The payment has been created and waiting for payment. </li>
+    <li> <strong>PAID</strong> - The payment has been paid successfully. </li>
+    <li> <strong>REJECTED</strong> - The payment has been rejected. </li>
+</ul>
+
+
+<h5> Payment Method </h5>
+
+<p>
+    The payment method is a method that is used to make a payment.
+    The payment method can be one of the following values:
+</p>
+
+<ul>
+    <li> <strong>CARD</strong> - The payment is made using a card. </li>
+    <li> <strong>QRCODE</strong> - The payment is made using a QR code. </li>
+</ul>
+
+<h5> Create Payment </h5>
+
+<p>
+    To create a payment, you need to send a POST request to the endpoint <code>/api/payments</code>.
+    The request body should contain the following fields:
+</p>
+
+<pre>
+{
+    "amount": 100.00,
+    "method": "card",
+    "token_key": "..."
+}
+</pre>
+
+<h5> Get Payment </h5>
+
+<p>
+    To get a payment, you need to send a GET request to the endpoint <code>/api/payments/{id}</code>.
+    The request should contain the payment id in the URL.
+</p>
 
 
 {% endblock content %}
