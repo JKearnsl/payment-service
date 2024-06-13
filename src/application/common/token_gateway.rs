@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 
-use crate::domain::models::token::{TokenHash, TokenId};
+use crate::domain::models::token::{Token, TokenHash, TokenId};
+use crate::domain::models::user::UserId;
 
 #[async_trait]
 pub trait TokenReader {
