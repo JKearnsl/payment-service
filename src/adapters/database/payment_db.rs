@@ -48,9 +48,8 @@ impl PaymentReader for PaymentGateway {
     }
     
     async fn get_payments_by_user_id(&self, user_id: &UserId) -> Vec<Payment> {
-        let payments: Vec<payment::Model> = payment::Entity::find().filter(
-            Expr::col(payment::Column::SellerId).eq(user_id.to_string())
-        )
+        let payments: Vec<payment::Model> = payment::Entity::find()
+            .filter(Expr::col(payment::Column::SellerId).eq(*user_id))
             .all(&*self.db)
             .await
             .unwrap();
