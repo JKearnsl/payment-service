@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock title %}
+
+{% block content %}
+<h2>Register Form</h2>
+<p>Enter your username and password to register</p>
+
+<p hidden id="errorMessage" style="color: indianred"></p>
+
+<form>
+    <label for="username">Username:</label>
+    <input type="text" name="username" id="username" required>
+    <div hidden id="usernameError" style="color: indianred;"></div>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required>
+    <div hidden id="passwordError" style="color: indianred;"></div>
+    <br>
+    <input type="submit" value="Register">
+</form>
+<p>Already have an account? <a href="login">Login</a></p>
+
+<script>
+    const form = document.querySelector('form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.querySelector('#username').value;
+        const password = document.querySelector('#password').value;
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await response.json();
+        if (response.ok) {
+            window.location.href = 'login';
+        } else {
+            let usernameError = document.querySelector('#usernameError');
+            let passwordError = document.querySelector('#passwordError');
+            let errorMessage = document.querySelector('#errorMessage');
+            usernameError.hidden = true;
+            passwordError.hidden = true;
+            errorMessage.hidden = true;
+
+            if (Array.isArray(data.errors)) {
+                data.errors.forEach((error) => {
+                    let errorField = document.querySelector(`#${error.field}Error`);
+                    errorField.hidden = false;
+                    errorField.textContent = error.message;
+                });
+            } else {
+                errorMessage.hidden = false;
+                errorMessage.textContent = data.error;
+            }
+        }
+    });
+
+</script>
+{% endblock content %}
