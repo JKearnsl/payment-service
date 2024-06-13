@@ -3,10 +3,10 @@ use uuid::Uuid;
 
 use crate::application::common::exceptions::ApplicationError;
 use crate::application::common::interactor::Interactor;
-use crate::application::common::token_processor::TokenProcessor;
+use crate::application::common::session_processor::SessionProcessor;
 use crate::application::user::create::CreateUserDTO;
 use crate::application::user::get_by_id::GetUserByIdDTO;
-use crate::presentation::id_provider::get_id_provider;
+use crate::presentation::id_session_provider::get_id_session_provider;
 use crate::presentation::interactor_factory::InteractorFactory;
 
 pub fn router(cfg: &mut web::ServiceConfig) {
@@ -18,31 +18,27 @@ pub fn router(cfg: &mut web::ServiceConfig) {
     );
 }
 
-#[get("{id}")]
-async fn users_by_id(
-    id: web::Path<Uuid>,
-    ioc: web::Data<dyn InteractorFactory>,
-    token_processor: web::Data<dyn TokenProcessor>,
-    req: HttpRequest
-) -> Result<HttpResponse, ApplicationError> {
-    
-    let id_provider = get_id_provider(&req, &token_processor);
-
-    let data = ioc.get_user_by_id(id_provider).execute(GetUserByIdDTO {
-        id: id.into_inner()
-    }).await?;
-    
-    Ok(HttpResponse::Ok().json(data))
-}
-
 #[get("/self")]
 async fn user_self(
     ioc: web::Data<dyn InteractorFactory>,
-    token_processor: web::Data<dyn TokenProcessor>,
+    session_processor: web::Data<dyn SessionProcessor>,
     req: HttpRequest
 ) -> Result<HttpResponse, ApplicationError> {
-    let id_provider = get_id_provider(&req, &token_processor);
+    let id_provider = get_id_session_provider(&req, &session_processor).await;
     let data = ioc.get_user_self(id_provider).execute(()).await?;
+    Ok(HttpResponse::Ok().json(data))
+}
+
+#[get("")]
+async fn users_by_id(
+    id: web::Query<Uuid>,
+    ioc: web::Data<dyn InteractorFactory>,
+) -> Result<HttpResponse, ApplicationError> {
+    
+    let data = ioc.get_user_by_id().execute(GetUserByIdDTO {
+        id: id.into_inner()
+    }).await?;
+    
     Ok(HttpResponse::Ok().json(data))
 }
 
@@ -50,10 +46,10 @@ async fn user_self(
 async fn create_user(
     data: web::Json<CreateUserDTO>,
     ioc: web::Data<dyn InteractorFactory>,
-    token_processor: web::Data<dyn TokenProcessor>,
+    session_processor: web::Data<dyn SessionProcessor>,
     req: HttpRequest
 ) -> Result<HttpResponse, ApplicationError> {
-    let id_provider = get_id_provider(&req, &token_processor);
+    let id_provider = get_id_session_provider(&req, &session_processor).await;
     let data = ioc.create_user(id_provider).execute(data.into_inner()).await?;
     Ok(HttpResponse::Ok().json(data))
 }

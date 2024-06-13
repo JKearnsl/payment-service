@@ -1,11 +1,13 @@
+use std::str::FromStr;
 use actix_web::{delete, HttpRequest, HttpResponse, post, Result, web};
 use actix_web::cookie::Cookie;
 
 use crate::application::common::exceptions::ApplicationError;
 use crate::application::common::interactor::Interactor;
-use crate::application::common::token_processor::TokenProcessor;
+use crate::application::common::session_processor::SessionProcessor;
 use crate::application::session::create::CreateSessionDTO;
-use crate::presentation::id_provider::get_id_provider;
+use crate::domain::models::session_token::SessionToken;
+use crate::presentation::id_session_provider::get_id_session_provider;
 use crate::presentation::interactor_factory::InteractorFactory;
 
 pub fn router(cfg: &mut web::ServiceConfig) {
@@ -20,13 +22,18 @@ pub fn router(cfg: &mut web::ServiceConfig) {
 async fn create_session(
     data: web::Json<CreateSessionDTO>,
     ioc: web::Data<dyn InteractorFactory>,
-    token_processor: web::Data<dyn TokenProcessor>,
+    session_processor: web::Data<dyn SessionProcessor>,
     req: HttpRequest
 ) -> Result<HttpResponse, ApplicationError> {
-    let id_provider = get_id_provider(&req, &token_processor);
-    let (data, session_token) = ioc.create_session(id_provider).execute(
+    let id_provider = get_id_session_provider(&req, &session_processor).await;
+    
+    let (data, user_id) = ioc.create_session(id_provider).execute(
         data.into_inner()
     ).await?;
+    
+    let session_token = session_processor.set_token(
+        user_id,
+    ).await;
     
     let mut response = HttpResponse::Ok().json(data);
     response.add_cookie(
@@ -42,10 +49,16 @@ async fn create_session(
 #[delete("self")]
 async fn delete_self_session(
     ioc: web::Data<dyn InteractorFactory>,
-    token_processor: web::Data<dyn TokenProcessor>,
+    session_processor: web::Data<dyn SessionProcessor>,
     req: HttpRequest
 ) -> Result<HttpResponse, ApplicationError> {
-    let id_provider = get_id_provider(&req, &token_processor);
-    ioc.delete_self_session(id_provider).execute(()).await?;
+    let id_provider = get_id_session_provider(&req, &session_processor).await;
+    let session_token = req.cookie("session_token")
+        .map(|cookie| SessionToken::from_str(cookie.value()).unwrap());
+    
+    let token = ioc.delete_self_session(id_provider).execute(session_token).await?;
+    
+    session_processor.remove_token(&token).await;
+    
     Ok(HttpResponse::Ok().finish())
 }
