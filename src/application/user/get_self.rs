@@ -4,12 +4,14 @@ use crate::application::common::exceptions::{ApplicationError, ErrorContent};
 use crate::application::common::id_provider::IdProvider;
 use crate::application::common::interactor::Interactor;
 use crate::application::common::user_gateway::UserReader;
+use crate::domain::models::money::Money;
 use crate::domain::models::user::UserId;
 
 #[derive(Debug, Serialize)]
 pub struct UserSelfResultDTO{
     id: UserId,
     username: String,
+    balance: Money
 }
 
 
@@ -37,6 +39,7 @@ impl Interactor<(), UserSelfResultDTO> for GetUserSelf<'_> {
         Ok(UserSelfResultDTO {
             id: user.id,
             username: user.username,
+            balance: user.balance
         })
     }
 }
