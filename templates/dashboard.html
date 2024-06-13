@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+<p style="font-size: 1.1em; margin: 0">
+    <a class="active" href="#">Dashboard</a>
+    <a href="payments">Payments</a>
+    <a href="tokens">Tokens</a>
+    <a href="docs">Docs API</a>
+    <a href="about">About</a>
+</p>
+<hr style="margin-bottom: 25px">
+
+<!-- Dashboard content goes here -->
+
+<table>
+    <tbody>
+        <tr>
+            <td align="left" style="border-bottom: none; padding: 0">Hello <strong id="username"></strong>!</td>
+            <td align="right" style="border-bottom: none; padding: 0; cursor: pointer" id="leaveButton"><a>leave</a></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Sales statistics are collected here</p>
+
+<table>
+    <tbody>
+    <tr>
+        <td align="left" style="border-bottom: none; padding: 0"><strong>Balance:</strong></td>
+        <td align="right" style="border-bottom: none; padding: 0" id="balance">ye</td>
+    </tr>
+    <tr>
+        <td align="left" style="border-bottom: none; padding: 0"><strong>Maximum purchase:</strong></td>
+        <td align="right" style="border-bottom: none; padding: 0" id="maxPurchase">ye</td>
+    </tr>
+    <tr>
+        <td align="left" style="border-bottom: none; padding: 0"><strong>Minimum purchase:</strong></td>
+        <td align="right" style="border-bottom: none; padding: 0" id="minPurchase">ye</td>
+    </tr>
+    <tr>
+        <td align="left" style="border-bottom: none; padding: 0"><strong>Last purchase in</strong></td>
+        <td align="right" style="border-bottom: none; padding: 0" id="lastPurchase">ye</td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    const balance = document.querySelector('#balance');
+    const maxPurchase = document.querySelector('#maxPurchase');
+    const minPurchase = document.querySelector('#minPurchase');
+    const lastPurchase = document.querySelector('#lastPurchase');
+    const username = document.querySelector('#username');
+    const leaveButton = document.querySelector('#leaveButton');
+
+    maxPurchase.textContent = '0.00';
+    minPurchase.textContent = '0.00';
+    lastPurchase.textContent = '0.00';
+
+    fetch('/api/users/self', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            username.textContent = data.username;
+            balance.textContent = parseFloat(data.balance).toFixed(2);
+        })
+        .catch(_ => {
+            window.location.replace('/auth/login');
+        });
+
+    fetch('/api/payments', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(async response => {
+            if (!response.ok) {
+                throw new Error(await response.text());
+            }
+            return response.json();
+        })
+        .then(data => {
+            let payments = data;
+            if (payments.length > 0) {
+                maxPurchase.textContent = parseFloat(Math.max(...payments.map(p => p.amount))).toFixed(2);
+                minPurchase.textContent = parseFloat(Math.min(...payments.map(p => p.amount))).toFixed(2);
+                lastPurchase.textContent = parseFloat(payments[0].amount).toFixed(2);
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+    leaveButton.addEventListener('click', () => {
+        fetch('/api/sessions/self', {
+            method: 'DELETE'
+        })
+            .then(async response => {
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+            })
+            .then(_ => {
+                window.location.replace('/auth/login');
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    });
+
+</script>
+
+{% endblock content %}
