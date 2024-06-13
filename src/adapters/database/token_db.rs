@@ -2,7 +2,7 @@ use core::option::Option;
 
 use async_trait::async_trait;
 use futures::StreamExt;
-use sea_orm::{DbConn, EntityTrait};
+use sea_orm::{ColumnTrait, DbConn, EntityTrait, QueryFilter};
 use sea_orm::ActiveValue::Set;
 use uuid::Uuid;
 
