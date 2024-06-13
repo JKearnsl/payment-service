@@ -13,6 +13,7 @@ pub fn router(cfg: &mut web::ServiceConfig) {
         web::scope("/payments")
             .service(create_payment)
             .service(get_payment)
+            .service(get_payments)
     );
 }
 
