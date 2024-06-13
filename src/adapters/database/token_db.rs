@@ -1,9 +1,9 @@
 use core::option::Option;
 
 use async_trait::async_trait;
-use futures::StreamExt;
 use sea_orm::{ColumnTrait, DbConn, EntityTrait, QueryFilter};
 use sea_orm::ActiveValue::Set;
+use sea_orm::prelude::Expr;
 use uuid::Uuid;
 
 use crate::adapters::database::models::token;
@@ -52,7 +52,7 @@ impl TokenReader for TokenGateway {
     
     async fn get_user_tokens(&self, user_id: &UserId) -> Vec<TokenDomain> {
         let tokens: Vec<token::Model> = token::Entity::find()
-            .filter(token::Column::UserId.eq(user_id.to_string()))
+            .filter(Expr::col(token::Column::UserId).eq(*user_id))
             .all(&*self.db)
             .await
             .unwrap();
