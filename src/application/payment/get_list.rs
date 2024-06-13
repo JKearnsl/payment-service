@@ -37,7 +37,7 @@ impl Interactor<(), GetPaymentListResultDTO> for GetPaymentList<'_> {
         if !self.id_provider.is_auth() {
             return Err(
                 ApplicationError::Unauthorized(
-                    ErrorContent::Message("Необходимо авторизоваться".to_string())
+                    ErrorContent::Message("Unauthorized".to_string())
                 )
             );
         }
