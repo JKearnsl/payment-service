@@ -3,3 +3,4 @@ pub mod dashboard;
 pub mod payments;
 pub mod tokens;
 pub mod docs;
+pub mod about;

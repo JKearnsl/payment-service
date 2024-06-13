@@ -89,6 +89,7 @@ async fn main() -> std::io::Result<()> {
                 .configure(presentation::web::html::payments::router)
                 .configure(presentation::web::html::tokens::router)
                 .configure(presentation::web::html::docs::router)
+                .configure(presentation::web::html::about::router)
             )
             .app_data(ioc_data)
             .app_data(sp_data)
