@@ -5,3 +5,4 @@ pub mod payment_gateway;
 pub mod id_provider;
 pub mod exceptions;
 pub mod hasher;
+pub mod session_processor;
