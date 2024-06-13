@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+<p style="font-size: 1.1em; margin: 0">
+    <a href="dashboard">Dashboard</a>
+    <a class="active" href="#">Payments</a>
+    <a href="tokens">Tokens</a>
+    <a href="docs">Docs API</a>
+    <a href="about">About</a>
+</p>
+<hr style="margin-bottom: 25px">
+
+<!-- Payments content goes here -->
+
+<p>Payment statistics are collected here</p>
+
+<table>
+    <thead>
+    <tr>
+        <th align="left">ID</th>
+        <th align="left">STATE</th>
+        <th align="left">METHOD</th>
+        <th align="left">AMOUNT</th>
+        <th align="left">DATE</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td align="left">9</td>
+        <td align="left">leather</td>
+        <td align="left">brown</td>
+        <td align="left">brown</td>
+        <td align="left">brown</td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    let payments = [];
+
+    fetch('/api/users/self', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .catch(_ => {
+            window.location.replace('/auth/login');
+        });
+
+    fetch('/api/payments', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(async response => {
+            if (!response.ok) {
+                throw new Error(await response.text());
+            }
+            return response.json();
+        })
+        .then(data => payments = data)
+        .catch(error => {
+            console.log(error);
+        });
+
+    console.log(payments);
+
+</script>
+
+{% endblock content %}

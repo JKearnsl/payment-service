@@ -86,6 +86,7 @@ async fn main() -> std::io::Result<()> {
             .service(web::scope("")
                 .configure(presentation::web::html::auth::router)
                 .configure(presentation::web::html::dashboard::router)
+                .configure(presentation::web::html::payments::router)
             )
             .app_data(ioc_data)
             .app_data(sp_data)
