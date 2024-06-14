@@ -56,7 +56,6 @@
 
     maxPurchase.textContent = '0.00';
     minPurchase.textContent = '0.00';
-    lastPurchase.textContent = '0.00';
 
     fetch('/api/users/self', {
         method: 'GET',
@@ -93,9 +92,30 @@
         .then(data => {
             let payments = data;
             if (payments.length > 0) {
-                maxPurchase.textContent = parseFloat(Math.max(...payments.map(p => p.amount))).toFixed(2);
-                minPurchase.textContent = parseFloat(Math.min(...payments.map(p => p.amount))).toFixed(2);
-                lastPurchase.textContent = parseFloat(payments[0].amount).toFixed(2);
+
+                if (payments.filter(p => p.state === 'Paid').length !== 0) {
+                    maxPurchase.textContent = parseFloat(Math.max(...payments.filter(
+                        p => p.state === 'Paid'
+                    ).map(p => p.amount))).toFixed(2);
+                    minPurchase.textContent = parseFloat(Math.min(...payments.filter(
+                        p => p.state === 'Paid'
+                    ).map(p => p.amount))).toFixed(2);
+                }
+
+                let date = new Date(payments[0].created_at);
+                let userLang = navigator.language || 'en-US';
+                let formattedDate = date.toLocaleDateString(userLang, {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: '2-digit'
+                });
+
+                let formattedTime = date.toLocaleTimeString(userLang, {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
+
+                lastPurchase.textContent = `${formattedDate} at ${formattedTime}`;
             }
         })
         .catch(error => {
