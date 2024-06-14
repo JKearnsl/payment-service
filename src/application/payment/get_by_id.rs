@@ -2,7 +2,6 @@ use chrono::{DateTime, Utc};
 use serde::Serialize;
 
 use crate::application::common::exceptions::{ApplicationError, ErrorContent};
-use crate::application::common::id_provider::IdProvider;
 use crate::application::common::interactor::Interactor;
 use crate::application::common::payment_gateway::PaymentReader;
 use crate::domain::models::money::Money;
