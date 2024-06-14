@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::fmt::Display;
 
 use serde::Serialize;
 
@@ -13,7 +12,6 @@ pub enum ErrorContent {
 pub enum ApplicationError {
     InvalidData(ErrorContent),
     NotFound(ErrorContent),
-    Conflict(ErrorContent),
     Unauthorized(ErrorContent),
     Forbidden(ErrorContent),
 }

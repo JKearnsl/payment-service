@@ -17,7 +17,6 @@ impl ApplicationError {
         match *self {
             ApplicationError::InvalidData(ref content) => (StatusCode::BAD_REQUEST, content.clone()),
             ApplicationError::NotFound(ref content) => (StatusCode::NOT_FOUND, content.clone()),
-            ApplicationError::Conflict(ref content) => (StatusCode::CONFLICT, content.clone()),
             ApplicationError::Forbidden(ref content) => (StatusCode::FORBIDDEN, content.clone()),
             ApplicationError::Unauthorized(ref content) => (StatusCode::UNAUTHORIZED, content.clone()),
         }
