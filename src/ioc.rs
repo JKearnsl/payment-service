@@ -10,6 +10,7 @@ use crate::application::common::id_provider::IdProvider;
 use crate::application::payment::create::CreatePayment;
 use crate::application::payment::get_by_id::GetPayment;
 use crate::application::payment::get_list::GetPaymentList;
+use crate::application::payment::process_stub::{PaymentProcessResultDTO, PaymentProcessStub};
 use crate::application::session::create::CreateSession;
 use crate::application::session::delete_self::DeleteSessionSelf;
 use crate::application::token::create::CreateToken;
@@ -93,7 +94,7 @@ impl InteractorFactory for IoC {
             token_reader: &self.token_gateway,
             validator: &self.validator,
             password_hasher: &self.password_hasher,
-            token_hasher: &self.session_hasher,
+            token_hasher: &self.token_hasher,
         }
     }
 
@@ -107,6 +108,12 @@ impl InteractorFactory for IoC {
         GetPaymentList {
             payment_reader: &self.payment_gateway,
             id_provider,
+        }
+    }
+    
+    fn process_payment(&self) -> PaymentProcessStub {
+        PaymentProcessStub {
+            payment_gateway: &self.payment_gateway,
         }
     }
 
