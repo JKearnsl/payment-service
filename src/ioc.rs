@@ -13,6 +13,7 @@ use crate::application::payment::get_list::GetPaymentList;
 use crate::application::session::create::CreateSession;
 use crate::application::session::delete_self::DeleteSessionSelf;
 use crate::application::token::create::CreateToken;
+use crate::application::token::delete::DeleteToken;
 use crate::application::token::get_list::GetTokenList;
 use crate::application::user::create::CreateUser;
 use crate::application::user::get_by_id::GetUserById;
@@ -121,6 +122,13 @@ impl InteractorFactory for IoC {
     fn get_tokens(&self, id_provider: Box<dyn IdProvider>) -> GetTokenList {
         GetTokenList {
             token_reader: &self.token_gateway,
+            id_provider,
+        }
+    }
+    
+    fn delete_token(&self, id_provider: Box<dyn IdProvider>) -> DeleteToken {
+        DeleteToken {
+            token_gateway: &self.token_gateway,
             id_provider,
         }
     }

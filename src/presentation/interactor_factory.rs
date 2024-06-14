@@ -5,6 +5,7 @@ use crate::application::payment::get_list::GetPaymentList;
 use crate::application::session::create::CreateSession;
 use crate::application::session::delete_self::DeleteSessionSelf;
 use crate::application::token::create::CreateToken;
+use crate::application::token::delete::DeleteToken;
 use crate::application::token::get_list::GetTokenList;
 use crate::application::user::get_by_id::GetUserById;
 use crate::application::user::create::CreateUser;
@@ -21,4 +22,5 @@ pub trait InteractorFactory {
     fn get_payments(&self, id_provider: Box<dyn IdProvider>) -> GetPaymentList;
     fn create_token(&self, id_provider: Box<dyn IdProvider>) -> CreateToken;
     fn get_tokens(&self, id_provider: Box<dyn IdProvider>) -> GetTokenList;
+    fn delete_token(&self, id_provider: Box<dyn IdProvider>) -> DeleteToken;
 }
