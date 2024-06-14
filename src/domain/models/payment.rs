@@ -36,4 +36,16 @@ impl Payment {
             updated_at: None,
         }
     }
+
+    pub fn update(
+        &self,
+        state: PaymentState,
+    ) -> Self {
+        Self {
+            state,
+            updated_at: Some(Utc::now()),
+            ..self.clone()
+        }
+    }
+
 }
