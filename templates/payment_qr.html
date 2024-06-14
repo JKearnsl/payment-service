@@ -1,0 +1,40 @@
+{% extends "payment.html" %}
+
+
+{% block amount %}
+{{ amount }}
+{% endblock amount %}
+
+{% block store %}
+{{ store }}
+{% endblock store %}
+
+{% block order %}
+{{ order }}
+{% endblock order %}
+
+
+{% block payment_form %}
+<div id="qrcode"></div>
+
+<script>
+    const order = "{{ order }}";
+    const store = "{{ store }}";
+    const url = window.location.origin + "/payments/process?id=" + order + "?store=" + store;
+
+    let script = document.createElement('script');
+    script.src = window.location.origin + "/static/qrcode.min.js";
+    document.head.appendChild(script);
+    script.onload = function() {
+        new QRCode(document.getElementById("qrcode"), url);
+    };
+
+    setTimeout(function() {
+        location.reload();
+    }, 3000);
+
+
+</script>
+
+
+{% endblock payment_form %}
