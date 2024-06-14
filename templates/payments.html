@@ -27,18 +27,26 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
-        <td align="left">9</td>
-        <td align="left">leather</td>
-        <td align="left">brown</td>
-        <td align="left">brown</td>
-        <td align="left">brown</td>
-    </tr>
     </tbody>
 </table>
 
+<div
+        id="copiedTooltip"
+        style="
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px;
+        z-index: 1;
+    "
+>
+    Copied!
+</div>
+
 <script>
-    let payments = [];
+    const payments = document.querySelector('tbody');
 
     fetch('/api/users/self', {
         method: 'GET',
@@ -68,12 +76,87 @@
             }
             return response.json();
         })
-        .then(data => payments = data)
+        .then(data => {
+            data.forEach(
+                payment => {
+                    const row = payments.insertRow();
+
+                    let id = row.insertCell(0);
+                    let state = row.insertCell(1);
+                    let method = row.insertCell(2);
+                    let amount = row.insertCell(3);
+                    let date = row.insertCell(4);
+
+                    id.attributes['align'] = 'left';
+                    state.attributes['align'] = 'left';
+                    method.attributes['align'] = 'left';
+                    amount.attributes['align'] = 'left';
+                    date.attributes['align'] = 'left';
+
+
+                    let userLang = navigator.language || 'en-US';
+                    let datetime = new Date(payment.created_at);
+                    let formattedDate;
+                    let formattedTime = datetime.toLocaleTimeString(userLang, {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    });
+                    state.innerHTML = payment.state;
+                    method.innerHTML = payment.method;
+                    amount.innerHTML = parseFloat(payment.amount).toFixed(2);
+
+
+                    let idLength;
+                    if (window.innerWidth < 768) {
+                        idLength = 5; // Mobile
+                        formattedDate = datetime.toLocaleDateString(userLang, {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: '2-digit'
+                        });
+                    } else {
+                        idLength = 8; // Desktop
+                        formattedDate = datetime.toLocaleDateString(userLang, {
+                            day: '2-digit',
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                    }
+                    id.innerHTML = payment.id.length > idLength ? payment.id.substring(0, idLength) + '...' : payment.id;
+
+                    date.innerHTML = `${formattedDate} ${formattedTime}`;
+
+                    id.addEventListener('click', function(e) {
+                        copyText(payment.id);
+                        showCopiedTooltip(e);
+                    });
+
+                }
+            )
+        })
         .catch(error => {
             console.log(error);
         });
 
-    console.log(payments);
+    function copyText(text) {
+        let textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
+
+    function showCopiedTooltip(e) {
+        let tooltip = document.getElementById('copiedTooltip');
+        tooltip.style.display = 'block';
+        tooltip.style.left = e.pageX + 'px';
+        tooltip.style.top = e.pageY + 'px';
+        setTimeout(function() {
+            tooltip.style.display = 'none';
+        }, 1000);
+    }
+
 
 </script>
 
