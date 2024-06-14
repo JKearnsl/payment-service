@@ -24,4 +24,14 @@ impl User {
             balance: Money::new(0, 2)
         }
     }
+    
+    pub fn update(
+        &self,
+        balance: Money,
+    ) -> Self {
+        Self {
+            balance,
+            ..self.clone()
+        }
+    }
 }
