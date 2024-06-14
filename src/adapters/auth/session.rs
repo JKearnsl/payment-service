@@ -1,4 +1,3 @@
-use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::application::common::id_provider::IdProvider;
