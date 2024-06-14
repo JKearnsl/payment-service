@@ -1,0 +1,36 @@
+{% extends "payment.html" %}
+
+
+{% block amount %}
+{{ amount }}
+{% endblock amount %}
+
+{% block store %}
+{{ store }}
+{% endblock store %}
+
+{% block order %}
+{{ order }}
+{% endblock order %}
+
+{% block head %}
+{{ super() }}
+<style>
+    .centered-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+</style>
+{% endblock head %}
+
+{% block payment_form %}
+
+<div class="centered-content">
+    <img src="/static/payment-success.png" alt="Payment Success" style="width: 75%; height: 75%;">
+</div>
+
+
+{% endblock payment_form %}
