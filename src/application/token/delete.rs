@@ -3,7 +3,7 @@ use serde::Deserialize;
 use crate::application::common::exceptions::{ApplicationError, ErrorContent};
 use crate::application::common::id_provider::IdProvider;
 use crate::application::common::interactor::Interactor;
-use crate::application::common::token_gateway::{TokenGateway, TokenReader};
+use crate::application::common::token_gateway::TokenGateway;
 use crate::domain::models::token::TokenId;
 
 #[derive(Debug, Deserialize)]

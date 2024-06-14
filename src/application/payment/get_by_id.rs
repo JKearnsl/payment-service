@@ -33,7 +33,7 @@ impl Interactor<PaymentId, PaymentByIdResultDTO> for GetPayment<'_> {
             Some(u) => u,
             None => return Err(
                 ApplicationError::NotFound(
-                    ErrorContent::Message("Платеж не найден".to_string())
+                    ErrorContent::Message("Payment not found".to_string())
                 )
             ),
         };

@@ -28,7 +28,7 @@ impl Interactor<GetUserByIdDTO, UserByIdResultDTO> for GetUserById<'_> {
             Some(u) => u,
             None => return Err(
                 ApplicationError::NotFound(
-                    ErrorContent::Message("Пользователь не найден".to_string())
+                    ErrorContent::Message("User not found".to_string())
                 )
             ),
         };

@@ -6,9 +6,7 @@ use crate::application::common::exceptions::{ApplicationError, ErrorContent};
 use crate::application::common::hasher::Hasher;
 use crate::application::common::id_provider::IdProvider;
 use crate::application::common::interactor::Interactor;
-use crate::application::common::session_processor::SessionProcessor;
 use crate::application::common::user_gateway::UserReader;
-use crate::domain::models::session_token_hash::SessionTokenHash;
 use crate::domain::models::user::UserId;
 use crate::domain::services::validator::ValidatorService;
 
@@ -41,7 +39,7 @@ impl Interactor<CreateSessionDTO, (CreateSessionResultDTO, UserId)> for CreateSe
         if *self.id_provider.is_auth() {
             return Err(
                 ApplicationError::Forbidden(
-                    ErrorContent::Message("Вы уже авторизованы".to_string())
+                    ErrorContent::Message("You are already authorized".to_string())
                 )
             )
         }
@@ -69,7 +67,7 @@ impl Interactor<CreateSessionDTO, (CreateSessionResultDTO, UserId)> for CreateSe
             Some(user) => user,
             None => return Err(
                 ApplicationError::InvalidData(
-                    ErrorContent::Message("Неверная пара имя пользователя и пароль".to_string())
+                    ErrorContent::Message("Invalid username and password pair".to_string())
                 )
             )
         };
@@ -81,7 +79,7 @@ impl Interactor<CreateSessionDTO, (CreateSessionResultDTO, UserId)> for CreateSe
             true => true,
             false => return Err(
                 ApplicationError::InvalidData(
-                    ErrorContent::Message("Неверная пара имя пользователя и пароль".to_string())
+                    ErrorContent::Message("Invalid username and password pair".to_string())
                 )
             )
         };

@@ -58,7 +58,7 @@ impl Interactor<CreatePaymentDTO, CreatePaymentResultDTO> for CreatePayment<'_> 
         
         if !id_provider.is_auth() {
             return Err(ApplicationError::Unauthorized(
-                ErrorContent::Message("Необходимо авторизоваться".to_string())
+                ErrorContent::Message("Unauthorized".to_string())
             ));
         }
 
