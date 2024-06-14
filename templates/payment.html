@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Payment{% endblock title %}
+
+{% block head %}
+{{ super() }}
+<style>
+    .centered-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+<div class="centered-content">
+    <h3 id="storeName">{% block store %}{% endblock store %}</h3>
+    <p>
+        Order number: <strong id="orderNumber">{% block order %}{% endblock order %}</strong>
+    </p>
+    <p>
+        Total amount: <strong id="totalAmount">{% block amount %}{% endblock amount %}</strong> y.e.
+    </p>
+</div>
+
+<hr style="margin-bottom: 25px">
+
+<div class="centered-content">
+    {% block payment_form %}
+    {% endblock payment_form %}
+</div>
+
+<hr style="margin-bottom: 25px">
+
+<div class="centered-content">
+    <strong>Payment Service</strong><br>
+    <img src="/static/payment-secure.png" alt="Secure Payment">
+    <p>2021-2024 Payment Service.<br> All rights reserved.</p>
+</div>
+
+{% endblock content %}
