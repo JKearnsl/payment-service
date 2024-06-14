@@ -75,7 +75,7 @@ async fn main() -> std::io::Result<()> {
         
         App::new()
             .service(
-                fs::Files::new("/static", "./static").show_files_listing()
+                fs::Files::new("/static", "static").show_files_listing()
             )
             .service(web::scope("/api")
                 .configure(presentation::web::rest::user::router)
