@@ -83,6 +83,9 @@ async fn main() -> std::io::Result<()> {
                 .configure(presentation::web::rest::token::router)
                 .configure(presentation::web::rest::payment::router)
             )
+            .service(
+                web::redirect("/", "/dashboard")
+            )
             .service(web::scope("")
                 .configure(presentation::web::html::auth::router)
                 .configure(presentation::web::html::dashboard::router)
