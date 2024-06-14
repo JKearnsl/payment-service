@@ -54,8 +54,8 @@
     const username = document.querySelector('#username');
     const leaveButton = document.querySelector('#leaveButton');
 
-    maxPurchase.textContent = '0.00';
-    minPurchase.textContent = '0.00';
+    maxPurchase.textContent = '0.00 y.e.';
+    minPurchase.textContent = '0.00 y.e.';
 
     fetch('/api/users/self', {
         method: 'GET',
@@ -71,7 +71,7 @@
         })
         .then(data => {
             username.textContent = data.username;
-            balance.textContent = parseFloat(data.balance).toFixed(2);
+            balance.textContent = parseFloat(data.balance).toFixed(2) + ` y.e.`;
         })
         .catch(_ => {
             window.location.replace('/auth/login');
@@ -96,10 +96,10 @@
                 if (payments.filter(p => p.state === 'Paid').length !== 0) {
                     maxPurchase.textContent = parseFloat(Math.max(...payments.filter(
                         p => p.state === 'Paid'
-                    ).map(p => p.amount))).toFixed(2);
+                    ).map(p => p.amount))).toFixed(2) + ` y.e.`;
                     minPurchase.textContent = parseFloat(Math.min(...payments.filter(
                         p => p.state === 'Paid'
-                    ).map(p => p.amount))).toFixed(2);
+                    ).map(p => p.amount))).toFixed(2) + ` y.e.`;
                 }
 
                 let date = new Date(payments[0].created_at);
