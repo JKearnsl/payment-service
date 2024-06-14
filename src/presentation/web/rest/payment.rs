@@ -22,8 +22,8 @@ async fn create_payment(
     ioc: web::Data<dyn InteractorFactory>,
     data: web::Json<CreatePaymentDTO>
 ) -> Result<HttpResponse, ApplicationError> {
-    ioc.create_payment().execute(data.into_inner()).await?;
-    Ok(HttpResponse::Ok().finish())
+    let result = ioc.create_payment().execute(data.into_inner()).await?;
+    Ok(HttpResponse::Ok().json(result))
 }
 
 #[get("{id}")]
