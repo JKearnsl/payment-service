@@ -64,24 +64,51 @@
 <h5> Create Payment </h5>
 
 <p>
-    To create a payment, you need to send a POST request to the endpoint <code>/api/payments</code>.
+    To create a payment, you need to send a POST request to the endpoint <code id="paymentsApi">/api/payments</code>.
     The request body should contain the following fields:
 </p>
 
 <pre>
 {
     "amount": 100.00,
-    "method": "card",
+    "method": "Card",
     "token_key": "..."
 }
 </pre>
 
+<p>
+    Response:
+</p>
+
+<pre>
+{
+    "id": "00000000-0000-0000-0000-000000000000",
+    "state": "Pending",
+    "method": "Card",
+    "amount": "100.00",
+    "seller_id": "00000000-0000-0000-0000-000000000000",
+    "created_at": "2024-06-14T18:00:00Z",
+    "updated_at": null
+}
+</pre>
+
+<p>
+    You can give a payment link to the user. To generate it, you will need a payment ID. Link template:
+    <code id="paymentTemplate"></code>
+</p>
+
+
 <h5> Get Payment </h5>
 
 <p>
-    To get a payment, you need to send a GET request to the endpoint <code>/api/payments/{id}</code>.
+    To get a payment, you need to send a GET request to the endpoint <code id="paymentApi">/api/payments/{id}</code>.
     The request should contain the payment id in the URL.
 </p>
 
+<script>
+    document.getElementById('paymentTemplate').innerText = window.location.origin + '/payments/{id}';
+    document.getElementById('paymentsApi').innerText = window.location.origin + '/api/payments';
+    document.getElementById('paymentApi').innerText = window.location.origin + '/api/payments/{id}';
+</script>
 
 {% endblock content %}
