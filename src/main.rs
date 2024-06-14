@@ -1,6 +1,5 @@
 use std::net::TcpListener;
 use std::sync::Arc;
-use std::thread;
 
 use dotenv::dotenv;
 use actix_web::{App, HttpServer, web};
@@ -29,12 +28,6 @@ async fn main() -> std::io::Result<()> {
     // env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     std::env::set_var("RUST_LOG", "debug");
     env_logger::init();
-
-
-    let workers = match std::env::var("WORKERS") {
-        Ok(workers) => workers.parse::<usize>().ok(),
-        Err(_) => None,
-    };
     
     let host = std::env::var("HOST").unwrap_or("127.0.0.1".to_string());
     let port = std::env::var("PORT").unwrap_or("8080".to_string());
@@ -100,14 +93,6 @@ async fn main() -> std::io::Result<()> {
             .default_service(web::route().to(presentation::web::exception::not_found))
         // .wrap(Logger::new("[%s] [%{r}a] %U"))
     };
-
-
-    let available_workers = workers.unwrap_or(
-        match thread::available_parallelism() {
-            Ok(parallelism) => usize::from(parallelism),
-            Err(_) => 1,
-        }
-    );
     
     let listener = match TcpListener::bind(format!("{}:{}", host, port)) {
         Ok(listener) => {
@@ -122,6 +107,6 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(app_builder)
         .listen(listener)?
-        .workers(available_workers)
+        .workers(1)
         .run().await
 }
