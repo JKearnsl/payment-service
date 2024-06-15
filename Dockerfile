@@ -15,9 +15,9 @@ FROM alpine:3.20.0
 
 WORKDIR /usr/local/bin
 
-COPY --from=build /usr/local/cargo/bin/payment_service .
+COPY --from=build /usr/local/cargo/bin/payment-service .
 COPY --from=build /usr/service/templates ./templates
 COPY --from=build /usr/service/static ./static
 
 
-CMD ["payment_service"]
+CMD ["payment-  service"]
