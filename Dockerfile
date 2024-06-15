@@ -20,4 +20,4 @@ COPY --from=build /usr/service/templates ./templates
 COPY --from=build /usr/service/static ./static
 
 
-CMD ["payment-  service"]
+CMD ["payment-service"]
