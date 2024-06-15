@@ -20,7 +20,7 @@
 <script>
     const order = "{{ order }}";
     const store = "{{ store }}";
-    const url = window.location.origin + "/payments/process?id=" + order + "?store=" + store;
+    const url = window.location.origin + "/payments/process?id=" + order + "&store=" + store;
 
     let script = document.createElement('script');
     script.src = window.location.origin + "/static/qrcode.min.js";

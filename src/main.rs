@@ -57,7 +57,7 @@ async fn main() -> std::io::Result<()> {
     };
     
     let app_builder = move || {
-        
+
         let ioc_arc: Arc<dyn InteractorFactory> = Arc::new(IoC::new(
             db.clone(),
         ));
